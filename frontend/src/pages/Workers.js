@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -10,9 +10,38 @@ const Workers = () => {
     city: '',
     availability: '',
   });
+  const observerRef = useRef(null);
+
+  useEffect(() => {
+    // Intersection Observer for scroll animations
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+      }
+    );
+
+    // Observe all elements with scroll-reveal classes
+    const elements = document.querySelectorAll('.scroll-reveal');
+    elements.forEach((el) => observerRef.current.observe(el));
+
+    return () => {
+      if (observerRef.current) {
+        elements.forEach((el) => observerRef.current.unobserve(el));
+      }
+    };
+  }, [workers]);
 
   useEffect(() => {
     fetchWorkers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const fetchWorkers = async () => {
@@ -44,56 +73,70 @@ const Workers = () => {
 
   return (
     <div className="container">
-      <h1 style={{ color: 'white', marginTop: '2rem', marginBottom: '1rem' }}>Find Skilled Workers</h1>
+      <h1 className="scroll-reveal" style={{ color: 'white', marginTop: '2rem', marginBottom: '2rem', fontSize: '3rem', fontWeight: '800', textAlign: 'center', background: 'linear-gradient(90deg, #ffffff 0%, #FFD700 25%, #D4AF37 50%, #FFD700 75%, #ffffff 100%)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', animation: 'shimmer 3s linear infinite' }}>Find Skilled Workers</h1>
 
-      <div className="card">
-        <h3>Filters</h3>
+      <div className="card scroll-reveal" style={{ background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 215, 0, 0.2)' }}>
+        <h3 style={{ color: '#FFD700', marginBottom: '1.5rem' }}>Filters</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
           <div className="form-group">
-            <label className="form-label">Category</label>
+            <label className="form-label" style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>Category</label>
             <select
               name="category"
               className="form-select"
               value={filters.category}
               onChange={handleFilterChange}
+              style={{ background: 'rgba(0, 0, 0, 0.5)', border: '1px solid rgba(255, 215, 0, 0.3)', color: 'white', padding: '0.75rem', borderRadius: '8px' }}
             >
-              <option value="">All Categories</option>
-              <option value="home-based">Home Based</option>
-              <option value="part-time">Part Time</option>
-              <option value="freelancing">Freelancing</option>
-              <option value="local-services">Local Services</option>
-              <option value="cooking">Cooking</option>
-              <option value="plumbing">Plumbing</option>
-              <option value="electrical">Electrical</option>
-              <option value="delivery">Delivery</option>
+              <option value="" style={{ background: '#1a1a1a' }}>All Categories</option>
+              <option value="home-based" style={{ background: '#1a1a1a' }}>Home Based</option>
+              <option value="part-time" style={{ background: '#1a1a1a' }}>Part Time</option>
+              <option value="freelancing" style={{ background: '#1a1a1a' }}>Freelancing</option>
+              <option value="local-services" style={{ background: '#1a1a1a' }}>Local Services</option>
+              <option value="cooking" style={{ background: '#1a1a1a' }}>Cooking</option>
+              <option value="plumbing" style={{ background: '#1a1a1a' }}>Plumbing</option>
+              <option value="electrical" style={{ background: '#1a1a1a' }}>Electrical</option>
+              <option value="delivery" style={{ background: '#1a1a1a' }}>Delivery</option>
             </select>
           </div>
 
           <div className="form-group">
-            <label className="form-label">City</label>
-            <input
-              type="text"
+            <label className="form-label" style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>City</label>
+            <select
               name="city"
-              className="form-input"
+              className="form-select"
               value={filters.city}
               onChange={handleFilterChange}
-              placeholder="Enter city"
-            />
+              style={{ background: 'rgba(0, 0, 0, 0.5)', border: '1px solid rgba(255, 215, 0, 0.3)', color: 'white', padding: '0.75rem', borderRadius: '8px' }}
+            >
+              <option value="" style={{ background: '#1a1a1a' }}>All Cities</option>
+              <option value="Delhi" style={{ background: '#1a1a1a' }}>Delhi</option>
+              <option value="Mumbai" style={{ background: '#1a1a1a' }}>Mumbai</option>
+              <option value="Bangalore" style={{ background: '#1a1a1a' }}>Bangalore</option>
+              <option value="Hyderabad" style={{ background: '#1a1a1a' }}>Hyderabad</option>
+              <option value="Chennai" style={{ background: '#1a1a1a' }}>Chennai</option>
+              <option value="Kolkata" style={{ background: '#1a1a1a' }}>Kolkata</option>
+              <option value="Pune" style={{ background: '#1a1a1a' }}>Pune</option>
+              <option value="Ahmedabad" style={{ background: '#1a1a1a' }}>Ahmedabad</option>
+              <option value="Jaipur" style={{ background: '#1a1a1a' }}>Jaipur</option>
+              <option value="Gurugram" style={{ background: '#1a1a1a' }}>Gurugram</option>
+              <option value="Noida" style={{ background: '#1a1a1a' }}>Noida</option>
+            </select>
           </div>
 
           <div className="form-group">
-            <label className="form-label">Availability</label>
+            <label className="form-label" style={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>Availability</label>
             <select
               name="availability"
               className="form-select"
               value={filters.availability}
               onChange={handleFilterChange}
+              style={{ background: 'rgba(0, 0, 0, 0.5)', border: '1px solid rgba(255, 215, 0, 0.3)', color: 'white', padding: '0.75rem', borderRadius: '8px' }}
             >
-              <option value="">All Availability</option>
-              <option value="full-time">Full Time</option>
-              <option value="part-time">Part Time</option>
-              <option value="flexible">Flexible</option>
-              <option value="weekends-only">Weekends Only</option>
+              <option value="" style={{ background: '#1a1a1a' }}>All Availability</option>
+              <option value="full-time" style={{ background: '#1a1a1a' }}>Full Time</option>
+              <option value="part-time" style={{ background: '#1a1a1a' }}>Part Time</option>
+              <option value="flexible" style={{ background: '#1a1a1a' }}>Flexible</option>
+              <option value="weekends-only" style={{ background: '#1a1a1a' }}>Weekends Only</option>
             </select>
           </div>
         </div>
@@ -106,9 +149,9 @@ const Workers = () => {
         </div>
       ) : (
         <div className="grid">
-          {workers.map(worker => (
+          {workers.map((worker, index) => (
             <Link to={`/profile/${worker._id}`} key={worker._id} style={{ textDecoration: 'none' }}>
-              <div className="job-card">
+              <div className="job-card scroll-reveal" style={{ transitionDelay: `${index * 0.1}s` }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                   <div className="profile-avatar" style={{ width: '60px', height: '60px', fontSize: '1.5rem' }}>
                     {worker.name.charAt(0)}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
@@ -7,6 +7,34 @@ const Dashboard = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useContext(AuthContext);
+  const observerRef = useRef(null);
+
+  useEffect(() => {
+    // Intersection Observer for scroll animations
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+      }
+    );
+
+    // Observe all elements with scroll-reveal classes
+    const elements = document.querySelectorAll('.scroll-reveal');
+    elements.forEach((el) => observerRef.current.observe(el));
+
+    return () => {
+      if (observerRef.current) {
+        elements.forEach((el) => observerRef.current.unobserve(el));
+      }
+    };
+  }, [jobs]);
 
   useEffect(() => {
     fetchMyJobs();
@@ -60,14 +88,36 @@ const Dashboard = () => {
 
   return (
     <div className="container" style={{ marginTop: '2rem' }}>
-      <h1 style={{ color: 'white', marginBottom: '1rem' }}>
+      <h1 className="scroll-reveal" style={{ 
+        color: 'white', 
+        marginBottom: '2rem', 
+        fontSize: '3rem', 
+        fontWeight: '800', 
+        textAlign: 'center',
+        background: 'linear-gradient(90deg, #ffffff 0%, #FFD700 25%, #D4AF37 50%, #FFD700 75%, #ffffff 100%)',
+        backgroundSize: '200% auto',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+        animation: 'shimmer 3s linear infinite'
+      }}>
         {user.userType === 'provider' ? 'My Posted Jobs' : 'My Applications'}
       </h1>
 
       {user.userType === 'provider' && (
-        <Link to="/post-job" className="btn btn-primary" style={{ marginBottom: '1.5rem' }}>
-          Post New Job
-        </Link>
+        <div className="scroll-reveal" style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <Link to="/post-job" className="btn btn-primary" style={{ 
+            padding: '1rem 2rem', 
+            fontSize: '1.1rem',
+            background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)',
+            border: 'none',
+            color: '#000',
+            fontWeight: '700',
+            boxShadow: '0 4px 15px rgba(255, 215, 0, 0.3)'
+          }}>
+            ✨ Post New Job
+          </Link>
+        </div>
       )}
 
       {jobs.length === 0 ? (
@@ -81,16 +131,33 @@ const Dashboard = () => {
         </div>
       ) : (
         <div>
-          {jobs.map(job => (
-            <div key={job._id} className="card" style={{ marginBottom: '1.5rem' }}>
+          {jobs.map((job, index) => (
+            <div key={job._id} className="card scroll-reveal" style={{ 
+              marginBottom: '1.5rem',
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 215, 0, 0.2)',
+              transition: 'all 0.3s ease',
+              transitionDelay: `${index * 0.1}s`
+            }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                 <div>
-                  <h2>{job.title}</h2>
-                  <p style={{ color: '#666' }}>{job.description.substring(0, 150)}...</p>
-                  <div style={{ marginTop: '0.5rem' }}>
-                    <span className="job-category">{job.category}</span>
-                    <span style={{ marginLeft: '1rem' }}>📍 {job.location.city}</span>
-                    <span style={{ marginLeft: '1rem' }} className="job-payment">
+                  <h2 style={{ color: '#FFD700', marginBottom: '0.5rem' }}>{job.title}</h2>
+                  <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>{job.description.substring(0, 150)}...</p>
+                  <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                    <span className="job-category" style={{ 
+                      background: 'rgba(255, 215, 0, 0.2)', 
+                      border: '1px solid rgba(255, 215, 0, 0.5)',
+                      color: '#FFD700'
+                    }}>{job.category}</span>
+                    <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>📍 {job.location.city}</span>
+                    <span className="job-payment" style={{ 
+                      background: 'rgba(76, 175, 80, 0.2)',
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: '4px',
+                      color: '#4CAF50',
+                      fontWeight: '600'
+                    }}>
                       ₹{job.payment.amount} / {job.payment.type}
                     </span>
                   </div>
@@ -99,8 +166,8 @@ const Dashboard = () => {
               </div>
 
               {user.userType === 'provider' && job.applicants && job.applicants.length > 0 && (
-                <div style={{ marginTop: '1.5rem', borderTop: '1px solid #e0e0e0', paddingTop: '1rem' }}>
-                  <h3>Applicants ({job.applicants.length})</h3>
+                <div style={{ marginTop: '1.5rem', borderTop: '1px solid rgba(255, 215, 0, 0.2)', paddingTop: '1rem' }}>
+                  <h3 style={{ color: '#FFD700', marginBottom: '1rem' }}>Applicants ({job.applicants.length})</h3>
                   {job.applicants.map(applicant => (
                     <div 
                       key={applicant._id} 
@@ -109,20 +176,21 @@ const Dashboard = () => {
                         justifyContent: 'space-between', 
                         alignItems: 'center',
                         padding: '1rem',
-                        background: '#f9f9f9',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid rgba(255, 215, 0, 0.15)',
                         borderRadius: '8px',
                         marginTop: '0.5rem'
                       }}
                     >
                       <div>
-                        <p><strong>{applicant.worker?.name}</strong></p>
-                        <p style={{ color: '#666', fontSize: '0.9rem' }}>{applicant.worker?.email}</p>
+                        <p style={{ color: 'white', fontWeight: '600' }}>{applicant.worker?.name}</p>
+                        <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.9rem' }}>{applicant.worker?.email}</p>
                         {applicant.coverLetter && (
-                          <p style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
-                            <em>"{applicant.coverLetter}"</em>
+                          <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic' }}>
+                            "{applicant.coverLetter}"
                           </p>
                         )}
-                        <span className={`status-badge status-${applicant.status === 'pending' ? 'open' : applicant.status === 'accepted' ? 'completed' : 'cancelled'}`}>
+                        <span className={`status-badge status-${applicant.status === 'pending' ? 'open' : applicant.status === 'accepted' ? 'completed' : 'cancelled'}`} style={{ marginTop: '0.5rem', display: 'inline-block' }}>
                           {applicant.status}
                         </span>
                       </div>
@@ -131,14 +199,16 @@ const Dashboard = () => {
                           <button 
                             onClick={() => handleAcceptApplicant(job._id, applicant._id)}
                             className="btn btn-success"
+                            style={{ background: '#4CAF50', border: 'none', padding: '0.5rem 1rem' }}
                           >
-                            Accept
+                            ✓ Accept
                           </button>
                           <button 
                             onClick={() => handleRejectApplicant(job._id, applicant._id)}
                             className="btn btn-danger"
+                            style={{ background: '#f44336', border: 'none', padding: '0.5rem 1rem' }}
                           >
-                            Reject
+                            ✕ Reject
                           </button>
                         </div>
                       )}
@@ -151,21 +221,21 @@ const Dashboard = () => {
                 <button 
                   onClick={() => handleCompleteJob(job._id)}
                   className="btn btn-success"
-                  style={{ marginTop: '1rem' }}
+                  style={{ marginTop: '1rem', background: '#4CAF50', border: 'none', padding: '0.75rem 1.5rem', fontSize: '1rem' }}
                 >
-                  Mark as Completed
+                  ✓ Mark as Completed
                 </button>
               )}
 
               {user.userType === 'worker' && (
-                <div style={{ marginTop: '1rem' }}>
-                  <p><strong>Provider:</strong> {job.provider?.name}</p>
-                  <p style={{ color: '#666' }}>{job.provider?.email}</p>
+                <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '8px', border: '1px solid rgba(255, 215, 0, 0.15)' }}>
+                  <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}><strong style={{ color: '#FFD700' }}>Provider:</strong> {job.provider?.name}</p>
+                  <p style={{ color: 'rgba(255, 255, 255, 0.6)' }}>{job.provider?.email}</p>
                 </div>
               )}
 
-              <Link to={`/jobs/${job._id}`} className="btn btn-secondary" style={{ marginTop: '1rem' }}>
-                View Details
+              <Link to={`/jobs/${job._id}`} className="btn btn-secondary" style={{ marginTop: '1rem', background: 'rgba(255, 215, 0, 0.1)', border: '1px solid rgba(255, 215, 0, 0.5)', color: '#FFD700', fontWeight: '600' }}>
+                View Details →
               </Link>
             </div>
           ))}

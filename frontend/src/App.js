@@ -11,6 +11,7 @@ import JobDetails from './pages/JobDetails';
 import PostJob from './pages/PostJob';
 import Profile from './pages/Profile';
 import Workers from './pages/Workers';
+import Team from './pages/Team';
 import './App.css';
 
 // Protected Route Component
@@ -37,6 +38,7 @@ function App() {
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/jobs/:id" element={<JobDetails />} />
             <Route path="/workers" element={<Workers />} />
+            <Route path="/team" element={<Team />} />
             <Route path="/profile/:id" element={<Profile />} />
             <Route
               path="/dashboard"

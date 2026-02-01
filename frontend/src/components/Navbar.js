@@ -20,8 +20,9 @@ const Navbar = () => {
         
         <ul className="navbar-menu">
           <li><Link to="/">Home</Link></li>
-          <li><Link to="/jobs">Find Jobs</Link></li>
-          <li><Link to="/workers">Find Workers</Link></li>
+          <li><Link to="/jobs">Jobs</Link></li>
+          <li><Link to="/workers">Workers</Link></li>
+          <li><Link to="/team">About Us</Link></li>
           {user && <li><Link to="/dashboard">Dashboard</Link></li>}
           {user && user.userType === 'provider' && (
             <li><Link to="/post-job">Post Job</Link></li>
