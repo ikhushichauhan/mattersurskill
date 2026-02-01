@@ -13,6 +13,7 @@ const Jobs = () => {
 
   useEffect(() => {
     fetchJobs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const fetchJobs = async () => {
