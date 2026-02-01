@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 
 const Workers = () => {
   const [workers, setWorkers] = useState([]);
@@ -23,7 +23,7 @@ const Workers = () => {
       if (filters.city) params.append('city', filters.city);
       if (filters.availability) params.append('availability', filters.availability);
 
-      const { data } = await axios.get(`/api/users/workers/search?${params.toString()}`);
+      const { data } = await api.get(`/api/users/workers/search?${params.toString()}`);
       setWorkers(data.workers);
     } catch (error) {
       console.error('Error fetching workers:', error);

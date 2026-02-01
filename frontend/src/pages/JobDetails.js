@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
 
 const JobDetails = () => {
@@ -21,7 +21,7 @@ const JobDetails = () => {
 
   const fetchJob = async () => {
     try {
-      const { data } = await axios.get(`/api/jobs/${id}`);
+      const { data } = await api.get(`/api/jobs/${id}`);
       setJob(data);
     } catch (error) {
       console.error('Error fetching job:', error);
@@ -40,7 +40,7 @@ const JobDetails = () => {
     setMessage('');
 
     try {
-      await axios.post(`/api/jobs/${id}/apply`, { coverLetter });
+      await api.post(`/api/jobs/${id}/apply`, { coverLetter });
       setMessage('Application submitted successfully!');
       fetchJob();
     } catch (error) {

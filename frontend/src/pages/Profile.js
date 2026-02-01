@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
 
 const Profile = () => {
@@ -22,7 +22,7 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
-      const { data } = await axios.get(`/api/users/${id}`);
+      const { data } = await api.get(`/api/users/${id}`);
       setProfile(data);
       setEditData(data);
     } catch (error) {
@@ -34,7 +34,7 @@ const Profile = () => {
 
   const fetchReviews = async () => {
     try {
-      const { data } = await axios.get(`/api/reviews/${id}`);
+      const { data } = await api.get(`/api/reviews/${id}`);
       setReviews(data.reviews);
     } catch (error) {
       console.error('Error fetching reviews:', error);
@@ -50,7 +50,7 @@ const Profile = () => {
 
   const handleSave = async () => {
     try {
-      const { data } = await axios.put('/api/users/profile', editData);
+      const { data } = await api.put('/api/users/profile', editData);
       setProfile(data);
       updateUser(data);
       setIsEditing(false);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -24,7 +24,7 @@ const Jobs = () => {
       if (filters.workType) params.append('workType', filters.workType);
       params.append('status', 'open');
 
-      const { data } = await axios.get(`/api/jobs?${params.toString()}`);
+      const { data } = await api.get(`/api/jobs?${params.toString()}`);
       setJobs(data.jobs);
     } catch (error) {
       console.error('Error fetching jobs:', error);
